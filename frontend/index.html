@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Sathi: Your Digital Farming Companion</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom CSS for animations, colors, and specific styles */
+        :root {
+            --primary-green: #2a9d8f;
+            --secondary-green: #264653;
+            --accent-yellow: #e9c46a;
+            --accent-orange: #f4a261;
+            --accent-red: #e76f51;
+            --light-bg: #f8f9fa;
+            --earthy-brown: #6f4e37;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-green);
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Animation for elements fading in on scroll */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary-green);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* WhatsApp Mockup */
+        .whatsapp-chat {
+            background-color: #e5ddd5;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+        .chat-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .chat-bubble.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        .chat-bubble.received {
+            background-color: #ffffff;
+            align-self: flex-start;
+        }
+        .chat-bubble .time {
+            font-size: 0.7rem;
+            color: #999;
+            float: right;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- ========== Navigation Bar ========== -->
+    <header id="navbar" class="bg-white/80 backdrop-blur-md shadow-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold text-gray-800">
+                <span class="text-green-600">Crop</span><span class="text-yellow-600">Sathi</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 items-center">
+                <a href="#home" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Home</a>
+                <a href="#advisory" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Advisory</a>
+                <a href="#dashboard" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Dashboard</a>
+                <a href="#impact" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Impact</a>
+                <a href="#contact" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <select id="language-toggle" class="appearance-none bg-gray-200 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                        <option value="en">EN</option>
+                        <option value="te">TE</option>
+                        <option value="hi">HI</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+                <button class="md:hidden" id="mobile-menu-button">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
+            <a href="#advisory" class="block py-2 px-4 text-sm hover:bg-gray-200">Advisory</a>
+            <a href="#dashboard" class="block py-2 px-4 text-sm hover:bg-gray-200">Dashboard</a>
+            <a href="#impact" class="block py-2 px-4 text-sm hover:bg-gray-200">Impact</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- ========== Hero Section ========== -->
+        <section id="home" class="hero-section h-[calc(100vh-80px)] flex items-center justify-center text-white">
+            <div class="text-center space-y-6 px-4">
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight">
+                    <span class="text-green-300">Crop Sathi</span>
+                </h1>
+                <p class="text-xl md:text-2xl font-light">Your Digital Farming Companion</p>
+                <div class="max-w-2xl mx-auto text-lg text-gray-200 flex items-center justify-center space-x-8">
+                    <div class="text-center">
+                        <i class="fas fa-seedling text-3xl text-green-300 mb-2"></i>
+                        <p>Hyper-local Advice</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-brain text-3xl text-blue-300 mb-2"></i>
+                        <p>Predictive Intelligence</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-cloud-sun-rain text-3xl text-yellow-300 mb-2"></i>
+                        <p>Real-time Alerts</p>
+                    </div>
+                </div>
+                <a href="#advisory" class="inline-block btn-primary text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg">
+                    Try Advisory Now
+                </a>
+                <div class="pt-8">
+                    <p class="mb-2 text-gray-300">Watch a 1-min walkthrough</p>
+                    <div class="w-full max-w-2xl mx-auto bg-black rounded-lg shadow-2xl overflow-hidden">
+                        <div class="aspect-w-16 aspect-h-9">
+                            <!-- Placeholder for video embed -->
+                            <div class="bg-gray-900 flex items-center justify-center">
+                                <i class="far fa-play-circle text-6xl text-white/50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Farmer Input Form Section ========== -->
+        <section id="advisory" class="py-20 bg-white fade-in-section">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Get Your Personalized Advisory</h2>
+                    <p class="text-gray-600 mt-2">Fill in your farm details to receive hyper-local, intelligent advice.</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <form id="advisory-form">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Farmer Name/ID -->
+                            <div>
+                                <label for="farmerName" class="block text-sm font-medium text-gray-700 mb-1">Farmer Name / ID</label>
+                                <input type="text" id="farmerName" name="farmerName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="e.g., Ramesh Kumar" required>
+                            </div>
+                            <!-- Phone Number -->
+                            <div>
+                                <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="e.g., +919876543210" required pattern="^\+[1-9]\d{1,14}$">
+                            </div>
+                            <!-- Crop Type -->
+                            <div>
+                                <label for="cropType" class="block text-sm font-medium text-gray-700 mb-1">Crop Type</label>
+                                <select id="cropType" name="cropType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required>
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <!-- Soil Type -->
+                            <div>
+                                <label for="soilType" class="block text-sm font-medium text-gray-700 mb-1">Soil Type</label>
+                                <select id="soilType" name="soilType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required>
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <!-- Crop Stage -->
+                            <div class="md:col-span-2">
+                                <label for="cropStage" class="block text-sm font-medium text-gray-700 mb-2">Crop Stage</label>
+                                <input type="range" id="cropStage" name="cropStage" min="0" max="4" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" disabled>
+                                <div id="crop-stage-labels" class="flex justify-between text-xs text-gray-500 mt-2 px-1">
+                                    <span class="text-center w-full">Please select a crop first</span>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="progress-bar-container">
+                                        <div id="stage-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- GPS Location -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Field Location</label>
+                                <div class="flex items-center space-x-4">
+                                    <button type="button" id="gps-button" class="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Auto-Detect Location</span>
+                                    </button>
+                                    <div id="gps-status" class="text-sm text-gray-500 p-2 bg-gray-100 rounded-lg w-full">
+                                        Click the button to get your field's location.
+                                    </div>
+                                </div>
+                                <div id="map-placeholder" class="mt-4 h-48 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 hidden">
+                                    <i class="fas fa-map-marked-alt text-4xl mr-2"></i> Map will appear here
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="mt-8 text-center">
+                            <button type="submit" id="submit-btn" class="btn-primary text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg w-full md:w-auto">
+                                <span id="submit-btn-text">Generate My Dashboard</span>
+                                <i id="submit-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Advisory Dashboard Section (Initially Hidden) ========== -->
+        <section id="dashboard" class="py-20 bg-gray-50 fade-in-section hidden">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800">Your Personalized Dashboard</h2>
+                    <p class="text-gray-600 mt-2">Here's your real-time advice for <span id="dashboard-crop-name" class="font-bold text-green-600">your crop</span>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Main Advice & Alerts -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Daily Micro-Advice -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-green-200">
+                            <h3 class="text-2xl font-bold text-secondary-green mb-4 flex items-center"><i class="fas fa-tint text-blue-500 mr-3"></i>Daily Micro-Advice</h3>
+                            <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                <p class="text-lg text-blue-800">"Irrigate <span class="font-bold text-2xl">5 liters/sq.m</span> today. Soil moisture is optimal."</p>
+                            </div>
+                        </div>
+
+                        <!-- Predictive Alerts -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-yellow-200">
+                            <h3 class="text-2xl font-bold text-secondary-green mb-4 flex items-center"><i class="fas fa-exclamation-triangle text-yellow-500 mr-3"></i>Predictive Alerts</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start p-4 bg-red-50 border border-red-200 rounded-lg">
+                                    <div class="text-2xl text-red-500 mr-4"><i class="fas fa-spider"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-red-800">High Pest Risk: Aphids</h4>
+                                        <p class="text-red-700">Preventive neem oil spray recommended within 48 hours. <a href="#pest-info" class="underline">Learn more</a>.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="text-2xl text-blue-500 mr-4"><i class="fas fa-cloud-showers-heavy"></i></div>
+                                    <div>
+                                        <h4 class="font-bold text-blue-800">Rain Risk: Tomorrow Afternoon</h4>
+                                        <p class="text-blue-700">Heavy rainfall (15mm) predicted. Ensure field bunds are strong to prevent waterlogging.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial & Market Alerts -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg border border-purple-200">
+                            <h3 class="text-2xl font-bold text-secondary-green mb-4 flex items-center"><i class="fas fa-rupee-sign text-purple-500 mr-3"></i>Market & Financials</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                    <p class="text-green-800">You are eligible for the PM-KISAN subsidy. <a href="#" class="underline">Check status</a>.</p>
+                                </div>
+                                <div class="flex items-center p-3 bg-yellow-50 rounded-lg">
+                                    <i class="fas fa-chart-line text-yellow-600 mr-3"></i>
+                                    <p class="text-yellow-800">Local Mandi Price for <span id="mandi-crop-name" class="font-bold">Wheat</span>: ₹2,125/quintal (Up 2%).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Weather & Reminders -->
+                    <div class="space-y-8">
+                        <!-- Weather Forecast -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-bold text-secondary-green mb-4">5-Day Weather Forecast</h3>
+                            <div class="space-y-3">
+                                <!-- Day 1 -->
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            // This data is now the single source of truth, aligned with your Python backend.
+            const API_BASE_URL = "http://127.0.0.1:8000";
+            const CROP_DATA = {
+                "rice": { "stages": ["nursery", "transplanting", "vegetative", "flowering", "harvesting"] },
+                "wheat": { "stages": ["sowing", "germination", "tillering", "heading", "ripening"] },
+                "maize": { "stages": ["planting", "vegetative", "tasseling", "silking", "maturity"] }
+            };
+            const VALID_SOIL_TYPES = ["alluvial", "black", "red", "laterite", "desert", "mountain"];
+
+            // --- DOM ELEMENTS ---
+            const form = document.getElementById('advisory-form');
+            const cropTypeSelect = document.getElementById('cropType');
+            const soilTypeSelect = document.getElementById('soilType');
+            const gpsButton = document.getElementById('gps-button');
+            const gpsStatus = document.getElementById('gps-status');
+            const cropStageSlider = document.getElementById('cropStage');
+            const cropStageLabels = document.getElementById('crop-stage-labels');
+            const stageProgressBar = document.getElementById('stage-progress-bar');
+            const submitBtn = document.getElementById('submit-btn');
+            const submitBtnText = document.getElementById('submit-btn-text');
+            const submitSpinner = document.getElementById('submit-spinner');
+            const dashboardSection = document.getElementById('dashboard');
+            const dashboardCropName = document.getElementById('dashboard-crop-name');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            // Hidden fields for GPS
+            let latitude = null;
+            let longitude = null;
+
+            // --- INITIALIZATION ---
+            function populateDropdown(selectElement, options) {
+                selectElement.innerHTML = `<option value="" disabled selected>-- Please Select --</option>`;
+                options.forEach(option => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = option;
+                    optionEl.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+                    selectElement.appendChild(optionEl);
+                });
+            }
+
+            // Populate dropdowns on page load
+            populateDropdown(cropTypeSelect, Object.keys(CROP_DATA));
+            populateDropdown(soilTypeSelect, VALID_SOIL_TYPES);
+
+            // --- EVENT LISTENERS ---
+
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Update crop stages when a crop is selected
+            cropTypeSelect.addEventListener('change', (e) => {
+                const selectedCrop = e.target.value;
+                if (!selectedCrop) return;
+
+                const stages = CROP_DATA[selectedCrop].stages;
+                cropStageSlider.max = stages.length - 1;
+                cropStageSlider.value = 0;
+                cropStageSlider.disabled = false;
+                stageProgressBar.style.width = '0%';
+
+                cropStageLabels.innerHTML = '';
+                stages.forEach(stage => {
+                    const span = document.createElement('span');
+                    span.textContent = stage.charAt(0).toUpperCase() + stage.slice(1);
+                    cropStageLabels.appendChild(span);
+                });
+            });
+
+            // Crop stage slider
+            cropStageSlider.addEventListener('input', (e) => {
+                const percentage = (e.target.value / (cropStageSlider.max || 1)) * 100;
+                stageProgressBar.style.width = `${percentage}%`;
+            });
+
+            // GPS button
+            gpsButton.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    gpsStatus.textContent = 'Geolocation is not supported by your browser.';
+                    gpsStatus.classList.add('text-red-500');
+                    return;
+                }
+
+                gpsStatus.textContent = 'Detecting location...';
+                gpsStatus.classList.remove('text-red-500');
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        latitude = position.coords.latitude;
+                        longitude = position.coords.longitude;
+                        gpsStatus.textContent = `Location acquired: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                        gpsStatus.classList.add('text-green-600');
+                    },
+                    () => {
+                        gpsStatus.textContent = 'Unable to retrieve location. Please enable location services.';
+                        gpsStatus.classList.add('text-red-500');
+                    }
+                );
+            });
+
+            // Form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!latitude || !longitude) {
+                    alert('Please auto-detect your location before submitting.');
+                    return;
+                }
+
+                // UI feedback for submission
+                submitBtn.disabled = true;
+                submitBtnText.textContent = 'Generating...';
+                submitSpinner.classList.remove('hidden');
+
+                const formData = new FormData(form);
+                const selectedCrop = formData.get('cropType');
+                const selectedStageIndex = parseInt(formData.get('cropStage'));
+                const cropStagesForSelectedCrop = CROP_DATA[selectedCrop].stages;
+
+                const langMap = { 'en': 'English', 'hi': 'Hindi', 'te': 'Telugu' };
+                const selectedLang = langMap[document.getElementById('language-toggle').value] || 'English';
+
+                const farmerData = {
+                    name: formData.get('farmerName'),
+                    phone_number: formData.get('phoneNumber'),
+                    crop: selectedCrop,
+                    crop_stage: cropStagesForSelectedCrop[selectedStageIndex],
+                    soil_type: formData.get('soilType'),
+                    language: selectedLang,
+                    gps_location: {
+                        latitude: latitude,
+                        longitude: longitude
+                    }
+                };
+
+                try {
+                    // Step 1: Create the farmer entry
+                    const farmerResponse = await fetch(`${API_BASE_URL}/farmer-input/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(farmerData)
+                    });
+
+                    if (!farmerResponse.ok) {
+                        const errorData = await farmerResponse.json();
+                        if (farmerResponse.status === 409) {
+                             throw new Error(errorData.detail + " Please try a different number.");
+                        }
+                        const errorDetail = errorData.detail[0] ? `${errorData.detail[0].loc[1]}: ${errorData.detail[0].msg}` : 'An unknown validation error occurred.';
+                        throw new Error(`Validation Error: ${errorDetail}`);
+                    }
+
+                    const newFarmer = await farmerResponse.json();
+
+                    // Step 2: Get the advisory for the new farmer
+                    const advisoryResponse = await fetch(`${API_BASE_URL}/advisory/${newFarmer.id}`);
+                    
+                    if (!advisoryResponse.ok) {
+                        const errorData = await advisoryResponse.json();
+                        throw new Error(errorData.detail || 'Failed to fetch advisory.');
+                    }
+
+                    const advisoryData = await advisoryResponse.json();
+                    
+                    // Step 3: Populate and show the dashboard
+                    populateDashboard(advisoryData.advisory, farmerData.crop);
+                    dashboardSection.classList.remove('hidden');
+                    dashboardSection.scrollIntoView({ behavior: 'smooth' });
+
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                } finally {
+                    // Reset button
+                    submitBtn.disabled = false;
+                    submitBtnText.textContent = 'Generate My Dashboard';
+                    submitSpinner.classList.add('hidden');
+                }
+            });
+
+            // --- HELPER FUNCTIONS ---
+
+            function populateDashboard(advisoryText, cropName) {
+                dashboardCropName.textContent = cropName.charAt(0).toUpperCase() + cropName.slice(1);
+
+                const lines = advisoryText.split('\n');
+                
+                const advice = {
+                    weather: lines.find(l => l.startsWith('Weather:')) || 'Not available',
+                    pest: lines.find(l => l.startsWith('Pest Alert:')) || 'Not available',
+                    recommendation: lines.find(l => l.startsWith('Recommendation:')) || 'Not available',
+                    precaution: lines.find(l => l.startsWith('Precaution:')) || 'Not available',
+                    scheme: lines.find(l => l.startsWith('Govt. Scheme Info:')) || 'Not available'
+                };
+
+                const dailyAdviceElement = document.querySelector('#dashboard .bg-blue-50 p');
+                if (dailyAdviceElement) {
+                    dailyAdviceElement.textContent = `${advice.weather.replace('Weather: ', '')}. ${advice.precaution.replace('Precaution: ', '')}`;
+                }
+
+                const pestRiskElement = document.querySelector('#dashboard .bg-red-50');
+                if (pestRiskElement) {
+                    pestRiskElement.querySelector('h4').textContent = advice.pest.replace('Pest Alert: ', '');
+                    pestRiskElement.querySelector('p').textContent = advice.recommendation.replace('Recommendation: ', '');
+                }
+
+                const schemeElement = document.querySelector('#dashboard .bg-green-50 p');
+                if (schemeElement) {
+                    schemeElement.textContent = advice.scheme.replace('Govt. Scheme Info: ', '');
+                }
+            }
+
+            // Fade-in animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
