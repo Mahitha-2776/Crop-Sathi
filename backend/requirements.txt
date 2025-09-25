@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+requests
+twilio
+python-slowapi
+python-jose[cryptography]
+passlib[bcrypt]
+aiofiles
+python-dotenv
+pydantic[email]
+pytest

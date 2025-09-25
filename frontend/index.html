@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Sathi: Your Digital Farming Companion</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chart.js plugin for displaying labels on charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+    <!-- Leaflet CSS & JS for interactive maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom CSS for animations, colors, and specific styles */
+        :root {
+            --primary-green: #2a9d8f;
+            --secondary-green: #264653;
+            --accent-yellow: #e9c46a;
+            --accent-orange: #f4a261;
+            --accent-red: #e76f51;
+            --light-bg: #f8f9fa;
+            --earthy-brown: #6f4e37;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-green);
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Animation for elements fading in on scroll */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary-green);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        /* WhatsApp Mockup */
+        .whatsapp-chat {
+            background-color: #e5ddd5;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+        .chat-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .chat-bubble.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        .chat-bubble.received {
+            background-color: #ffffff;
+            align-self: flex-start;
+        }
+        .chat-bubble .time {
+            font-size: 0.7rem;
+            color: #999;
+            float: right;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- ========== Navigation Bar ========== -->
+    <header id="navbar" class="bg-white/80 backdrop-blur-md shadow-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold text-gray-800">
+                <span class="text-green-600">Crop</span><span class="text-yellow-600">Sathi</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 items-center">
+                <a href="#home" class="nav-link text-gray-600 hover:text-gray-900 font-medium" data-translate-key="nav_home">Home</a>
+                <a href="#advisory" class="nav-link text-gray-600 hover:text-gray-900 font-medium" data-translate-key="nav_advisory">Advisory</a>
+                <a href="#dashboard" class="nav-link text-gray-600 hover:text-gray-900 font-medium" data-translate-key="nav_dashboard">Dashboard</a>
+                <a href="#impact" class="nav-link text-gray-600 hover:text-gray-900 font-medium" data-translate-key="nav_impact">Impact</a>
+                <a href="#contact" class="nav-link text-gray-600 hover:text-gray-900 font-medium" data-translate-key="nav_contact">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <select id="language-toggle" class="appearance-none bg-gray-200 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-full leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                        <option value="en">EN</option>
+                        <option value="hi">HI</option>
+                        <option value="te">TE</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+                <div id="auth-buttons" class="hidden md:flex items-center space-x-2">
+                    <button id="login-btn" class="text-gray-600 hover:text-gray-900 font-medium" data-translate-key="auth_login">Login</button>
+                    <button id="register-btn" class="btn-primary text-white font-bold py-2 px-4 rounded-full text-sm" data-translate-key="auth_register">Register</button>
+                </div>
+                <div id="user-menu" class="hidden md:flex items-center space-x-4">
+                    <span id="user-identifier" class="text-sm text-gray-700"></span>
+                    <button id="history-btn" class="text-gray-600 hover:text-gray-900 font-medium text-sm" data-translate-key="user_history">History</button>
+                    <button id="logout-btn" class="text-red-500 hover:text-red-700 font-medium text-sm" data-translate-key="user_logout">Logout</button>
+                </div>
+                <button class="md:hidden" id="mobile-menu-button">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200" data-translate-key="nav_home">Home</a>
+            <a href="#advisory" class="block py-2 px-4 text-sm hover:bg-gray-200" data-translate-key="nav_advisory">Advisory</a>
+            <a href="#dashboard" class="block py-2 px-4 text-sm hover:bg-gray-200" data-translate-key="nav_dashboard">Dashboard</a>
+            <a href="#impact" class="block py-2 px-4 text-sm hover:bg-gray-200" data-translate-key="nav_impact">Impact</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200" data-translate-key="nav_contact">Contact</a>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <!-- App-wide Error Display -->
+        <div id="app-error" class="hidden container mx-auto p-4 my-4 bg-red-100 border border-red-400 text-red-700 rounded text-center">
+            <!-- Error message will be inserted here -->
+        </div>
+
+        <!-- ========== Hero Section ========== -->
+        <section id="home" class="hero-section h-[calc(100vh-80px)] flex items-center justify-center text-white">
+            <div class="text-center space-y-6 px-4">
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight">
+                    <span class="text-green-300">Crop Sathi</span>
+                </h1>
+                <p class="text-xl md:text-2xl font-light" data-translate-key="hero_subtitle">Your Digital Farming Companion</p>
+                <div class="max-w-2xl mx-auto text-lg text-gray-200 flex items-center justify-center space-x-8">
+                    <div class="text-center">
+                        <i class="fas fa-seedling text-3xl text-green-300 mb-2"></i>
+                        <p data-translate-key="hero_feature1">Hyper-local Advice</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-brain text-3xl text-blue-300 mb-2"></i>
+                        <p data-translate-key="hero_feature2">Predictive Intelligence</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-cloud-sun-rain text-3xl text-yellow-300 mb-2"></i>
+                        <p data-translate-key="hero_feature3">Real-time Alerts</p>
+                    </div>
+                </div>
+                <a href="#advisory" class="inline-block btn-primary text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg" data-translate-key="hero_cta">
+                    Try Advisory Now
+                </a>
+                <div class="pt-8">
+                    <p class="mb-2 text-gray-300" data-translate-key="hero_video_prompt">Watch a 1-min walkthrough</p>
+                    <div class="w-full max-w-2xl mx-auto bg-black rounded-lg shadow-2xl overflow-hidden">
+                        <div class="aspect-w-16 aspect-h-9">
+                            <!-- Placeholder for video embed -->
+                            <div class="bg-gray-900 flex items-center justify-center">
+                                <i class="far fa-play-circle text-6xl text-white/50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Farmer Input Form Section ========== -->
+        <section id="advisory" class="py-20 bg-white fade-in-section">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800" data-translate-key="form_title">Get Your Personalized Advisory</h2>
+                    <p class="text-gray-600 mt-2" data-translate-key="form_subtitle">Fill in your farm details to receive hyper-local, intelligent advice.</p>
+                </div>
+                <div id="login-prompt" class="text-center mb-12">
+                    <p class="text-xl text-gray-700" data-translate-key="login_prompt_text">Please <a href="#" id="login-prompt-link" class="text-green-600 font-bold underline">login</a> or <a href="#" id="register-prompt-link" class="text-green-600 font-bold underline">register</a> to use the advisory service.</p>
+                </div>
+
+                <!-- Form Error Display -->
+                <div id="form-error" class="hidden max-w-4xl mx-auto p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded text-center">
+                    <!-- Error message will be inserted here -->
+                </div>
+
+                <div id="advisory-form-container" class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200 hidden">
+                    <form id="advisory-form">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Farmer Name/ID -->
+                            <div>
+                                <label for="farmerName" class="block text-sm font-medium text-gray-700 mb-1" data-translate-key="label_farmer_name">Farmer Name / ID</label>
+                                <input type="text" id="farmerName" name="farmerName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" data-translate-key-placeholder="placeholder_farmer_name" placeholder="e.g., Ramesh Kumar" required>
+                            </div>
+                            <!-- Phone Number -->
+                            <div>
+                                <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1" data-translate-key="label_phone_number">Phone Number</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" data-translate-key-placeholder="placeholder_phone_number" placeholder="e.g., +919876543210" required pattern="^\+[1-9]\d{1,14}$">
+                            </div>
+                            <!-- Crop Type -->
+                            <div>
+                                <label for="cropType" class="block text-sm font-medium text-gray-700 mb-1" data-translate-key="label_crop_type">Crop Type</label>
+                                <select id="cropType" name="cropType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required>
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <!-- Soil Type -->
+                            <div>
+                                <label for="soilType" class="block text-sm font-medium text-gray-700 mb-1" data-translate-key="label_soil_type">Soil Type</label>
+                                <select id="soilType" name="soilType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required>
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <!-- Crop Stage -->
+                            <div class="md:col-span-2">
+                                <label for="cropStage" class="block text-sm font-medium text-gray-700 mb-2" data-translate-key="label_crop_stage">Crop Stage</label>
+                                <input type="range" id="cropStage" name="cropStage" min="0" max="4" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" disabled>
+                                <div id="crop-stage-labels" class="flex justify-between text-xs text-gray-500 mt-2 px-1">
+                                    <span class="text-center w-full" data-translate-key="stage_select_crop_first">Please select a crop first</span>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="progress-bar-container">
+                                        <div id="stage-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- GPS Location -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-translate-key="label_field_location">Field Location</label>
+                                <div class="flex items-center space-x-4">
+                                    <button type="button" id="gps-button" class="flex-shrink-0 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span data-translate-key="button_autodetect_location">Auto-Detect Location</span>
+                                    </button>
+                                    <div id="gps-status" class="text-sm text-gray-500 p-2 bg-gray-100 rounded-lg w-full" aria-live="polite" data-translate-key="gps_status_initial">
+                                        Click the button to get your field's location.
+                                    </div>
+                                </div>
+                                <div id="map-container" class="mt-4 h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 hidden">
+                                    <!-- Map will be initialized here by Leaflet -->
+                                </div>
+                            </div>
+                            <!-- Notification Preferences -->
+                            <fieldset class="md:col-span-2 hidden" id="notification-prefs">
+                                <legend class="block text-sm font-medium text-gray-700 mb-2" data-translate-key="label_notification_prefs">Notification Preferences (for logged-in users)</legend>
+                                <div class="flex items-center space-x-6 pt-2">
+                                    <label for="enable_sms" class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="enable_sms" name="enable_sms" class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500" checked>
+                                        <span class="ml-2 text-sm text-gray-600">SMS</span>
+                                    </label>
+                                    <label for="enable_whatsapp" class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="enable_whatsapp" name="enable_whatsapp" class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                        <span class="ml-2 text-sm text-gray-600">WhatsApp</span>
+                                    </label>
+                                    <label for="enable_voice" class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="enable_voice" name="enable_voice" class="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                        <span class="ml-2 text-sm text-gray-600">Voice Call</span>
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- Submit Button -->
+                        <div class="mt-8 flex flex-col md:flex-row justify-center items-center gap-4">
+                            <button type="submit" id="submit-btn" class="btn-primary text-white font-bold py-3 px-12 rounded-full text-lg shadow-lg w-full md:w-auto">
+                                <span id="submit-btn-text" data-translate-key="button_generate_dashboard">Generate My Dashboard</span>
+                                <i id="submit-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
+                            </button>
+                            <button type="button" id="clear-form-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-full text-lg w-full md:w-auto transition duration-300">
+                                <span data-translate-key="button_clear_form">Clear Form</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Advisory Dashboard Section (Initially Hidden) ========== -->
+        <section id="dashboard" class="py-20 bg-gray-50 fade-in-section hidden">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-translate-key="dashboard_title">Your Personalized Dashboard</h2>
+                    <p class="text-gray-600 mt-2 px-4 md:px-0" data-translate-key="dashboard_subtitle">Here's your real-time advice for <span id="dashboard-crop-name" class="font-bold text-green-600">your crop</span>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Main Advice & Alerts -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Daily Micro-Advice -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-blue-200">
+                            <h3 class="text-xl md:text-2xl font-bold text-secondary-green mb-4 flex items-center" data-translate-key="dashboard_todays_conditions"><i class="fas fa-sun text-yellow-500 mr-3"></i>Today's Conditions</h3>
+                            <div id="daily-advice-container" class="bg-blue-50 p-4 rounded-lg">
+                            </div>
+                        </div>
+
+                        <!-- Predictive Alerts -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-red-200">
+                            <h3 class="text-xl md:text-2xl font-bold text-secondary-green mb-4 flex items-center" data-translate-key="dashboard_pest_alert"><i class="fas fa-spider text-red-500 mr-3"></i>Pest & Disease Alert</h3>
+                            <div class="relative h-64 md:h-80">
+                                <canvas id="pestPredictionChart"></canvas>
+                            </div>
+                            <p id="pest-recommendation-text" class="mt-4 text-sm text-gray-600 bg-gray-50 p-2 rounded" data-translate-key="dashboard_loading_recommendation">Loading recommendation...</p>
+                        </div>
+
+                        <!-- Government Schemes -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-purple-200">
+                            <h3 class="text-xl md:text-2xl font-bold text-secondary-green mb-4 flex items-center" data-translate-key="dashboard_govt_schemes"><i class="fas fa-landmark text-green-500 mr-3"></i>Government Schemes</h3>
+                            <div id="govt-schemes-list" class="space-y-4">
+                                <p class="text-gray-500" data-translate-key="dashboard_loading_schemes">Loading schemes...</p>
+                            </div>
+                        </div>
+
+                        <!-- Satellite Crop Health -->
+                        <div id="crop-health-card" class="bg-white p-4 md:p-6 rounded-xl shadow-lg border hidden">
+                            <h3 class="text-xl md:text-2xl font-bold text-secondary-green mb-4 flex items-center"><i class="fas fa-satellite-dish text-purple-500 mr-3"></i>Crop Health (from Satellite)</h3>
+                            <div id="crop-health-status" class="text-lg font-semibold">Loading...</div>
+                            <div id="crop-health-ndvi" class="text-sm text-gray-500"></div>
+                            <p id="crop-health-message" class="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg"></p>
+                        </div>
+
+                        <!-- Soil Health Recommendation -->
+                        <div id="soil-health-card" class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-yellow-200 hidden">
+                            <h3 class="text-xl md:text-2xl font-bold text-secondary-green mb-4 flex items-center">
+                                <i class="fas fa-mountain text-yellow-600 mr-3"></i>Soil Health & Fertilizer Tip
+                            </h3>
+                            <p id="soil-recommendation-text" class="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg">Loading soil recommendation...</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Weather & Reminders -->
+                    <div class="space-y-8">
+                        <!-- Weather Forecast -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg md:text-xl font-bold text-secondary-green mb-4" data-translate-key="dashboard_weather_forecast">5-Day Weather Forecast</h3>
+                            <div id="weather-forecast-container" class="space-y-3">
+                                <p class="text-gray-500" data-translate-key="dashboard_loading_forecast">Weather forecast will appear here...</p>
+                            </div>
+                        </div>
+                        <!-- Water Management -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg md:text-xl font-bold text-secondary-green mb-4 flex items-center" data-translate-key="dashboard_water_management"><i class="fas fa-tint text-blue-500 mr-3"></i>Water Management</h3>
+                            <div id="water-info-container" class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Area Water Availability:</span>
+                                    <span id="water-availability" class="font-bold text-gray-800">Loading...</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Crop Requirement:</span>
+                                    <span id="water-requirement" class="font-bold text-gray-800">Loading...</span>
+                                </div>
+                                <p id="water-recommendation" class="mt-3 text-gray-600 bg-blue-50 p-3 rounded-lg">Loading recommendation...</p>
+                            </div>
+                        </div>
+                        <!-- Market Price Chart -->
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg" id="market-price-card">
+                            <h3 class="text-lg md:text-xl font-bold text-secondary-green mb-4" data-translate-key="dashboard_market_price">Market Price Trend</h3>
+                            <div class="relative h-64">
+                                <canvas id="marketPriceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </main>
+
+    <!-- Auth Modal Backdrop -->
+    <div id="auth-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <!-- Login Modal -->
+        <div id="login-modal" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative hidden" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+            <!-- Message Area -->
+            <div id="login-message" class="px-4 py-3 rounded relative mb-4 hidden" role="alert">
+                <strong class="font-bold"></strong>
+                <span class="block sm:inline"></span>
+            </div>
+
+            <h2 id="login-modal-title" class="text-2xl font-bold text-center mb-6" data-translate-key="modal_login_title">Login to Crop Sathi</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="login-phone" class="block text-sm font-medium text-gray-700" data-translate-key="label_phone_number">Phone Number</label>
+                    <input type="tel" id="login-phone" name="phone" required 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                           data-translate-key-placeholder="placeholder_phone_number" placeholder="+919876543210" pattern="^\+[1-9]\d{1,14}$" title="Phone number must be in E.164 format, e.g., +919876543210">
+                </div>
+                <div class="mb-6">
+                    <label for="login-password" class="block text-sm font-medium text-gray-700" data-translate-key="label_password">Password</label>
+                    <input type="password" id="login-password" name="password" required 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    <a href="#" id="forgot-password-link" class="text-xs text-green-600 hover:underline mt-1 block" data-translate-key="link_forgot_password">Forgot Password?</a>
+                </div>
+                <button type="submit" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg" data-translate-key="auth_login">Login</button>
+            </form>
+            <p class="text-center text-sm text-gray-600 mt-4" data-translate-key="modal_login_prompt">
+                Don't have an account? <a href="#" id="show-register-link" class="font-medium text-green-600 hover:text-green-500" data-translate-key="link_register_here">Register here</a>
+            </p>
+            <button id="close-login-modal-btn" class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Forgot Password Modal -->
+        <div id="forgot-password-modal" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative hidden" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title">
+            <!-- Message Area -->
+            <div id="forgot-message" class="px-4 py-3 rounded relative mb-4 hidden" role="alert"> 
+                <strong class="font-bold"></strong>
+                <span class="block sm:inline"></span>
+            </div>
+
+            <h2 id="forgot-modal-title" class="text-2xl font-bold text-center mb-6" data-translate-key="modal_forgot_title">Forgot Password</h2>
+            <p class="text-center text-sm text-gray-600 mb-4" data-translate-key="modal_forgot_subtitle">Enter your phone number and we'll send you a link to reset your password.</p>
+            <form id="forgot-password-form">
+                <div class="mb-4">
+                    <label for="forgot-phone" class="block text-sm font-medium text-gray-700" data-translate-key="label_phone_number">Phone Number</label>
+                    <input type="tel" id="forgot-phone" name="phone" required 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                           data-translate-key-placeholder="placeholder_phone_number" placeholder="+919876543210">
+                </div>
+                <button type="submit" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg" data-translate-key="button_send_reset_link">Send Reset Link</button>
+            </form>
+            <button id="close-forgot-modal-btn" class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Reset Password Modal -->
+        <div id="reset-password-modal" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative hidden" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
+            <!-- Message Area -->
+            <div id="reset-message" class="px-4 py-3 rounded relative mb-4 hidden" role="alert">
+                <strong class="font-bold"></strong>
+                <span class="block sm:inline"></span>
+            </div>
+
+            <h2 id="reset-modal-title" class="text-2xl font-bold text-center mb-6" data-translate-key="modal_reset_title">Set New Password</h2>
+            <form id="reset-password-form">
+                <input type="hidden" id="reset-token-input">
+                <div class="mb-4">
+                    <label for="reset-password-input" class="block text-sm font-medium text-gray-700" data-translate-key="label_new_password">New Password</label>
+                    <input type="password" id="reset-password-input" name="new_password" required minlength="8" 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <button type="submit" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg" data-translate-key="button_set_new_password">Set New Password</button>
+            </form>
+            <button id="close-reset-modal-btn" class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Register Modal -->
+        <div id="register-modal" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative hidden" role="dialog" aria-modal="true" aria-labelledby="register-modal-title">
+            <!-- Message Area -->
+            <div id="register-message" class="px-4 py-3 rounded relative mb-4 hidden" role="alert">
+                <strong class="font-bold"></strong>
+                <span class="block sm:inline"></span>
+            </div>
+
+            <h2 id="register-modal-title" class="text-2xl font-bold text-center mb-6" data-translate-key="modal_register_title">Create an Account</h2>
+            <form id="register-form">
+                <div class="mb-4">
+                    <label for="register-name" class="block text-sm font-medium text-gray-700" data-translate-key="label_full_name">Full Name</label>
+                    <input type="text" id="register-name" name="name" required 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" 
+                           data-translate-key-placeholder="placeholder_full_name" placeholder="e.g., Ramesh Kumar">
+                </div>
+                <div class="mb-4">
+                    <label for="register-phone" class="block text-sm font-medium text-gray-700" data-translate-key="label_phone_number">Phone Number</label>
+                    <input type="tel" id="register-phone" name="phone" required 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                           data-translate-key-placeholder="placeholder_phone_number" placeholder="+919876543210" pattern="^\+[1-9]\d{1,14}$" title="Phone number must be in E.164 format, e.g., +919876543210">
+                </div>
+                <div class="mb-4">
+                    <label for="register-password" class="block text-sm font-medium text-gray-700" data-translate-key="label_password_min_chars">Password (min 8 characters)</label>
+                    <input type="password" id="register-password" name="password" required minlength="8" 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <button type="submit" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg" data-translate-key="auth_register">Register</button>
+            </form>
+            <p class="text-center text-sm text-gray-600 mt-4" data-translate-key="modal_register_prompt">
+                Already have an account? <a href="#" id="show-login-link" class="font-medium text-green-600 hover:text-green-500" data-translate-key="link_login_here">Login here</a>
+            </p>
+            <button id="close-register-modal-btn" class="close-modal-btn absolute top-4 right-4 text-gray-500 hover:text-gray-800" aria-label="Close">&times;</button>
+        </div>
+    </div>
+
+    <!-- Advisory History Modal -->
+    <div id="history-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div id="history-modal" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl relative h-[90vh] flex flex-col">
+            <h2 id="history-modal-title" class="text-2xl font-bold text-center mb-4 text-gray-800" data-translate-key="modal_history_title">Advisory History</h2>
+            <div class="relative mb-4">
+                <input type="search" id="history-search-input" data-translate-key-placeholder="placeholder_history_search" placeholder="Search by crop or keyword..." class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-green-500 focus:border-green-500">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <button id="history-search-clear-btn" class="text-gray-400 hover:text-gray-600 hidden" aria-label="Clear search">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="history-list-container" class="flex-grow overflow-y-auto space-y-4 pr-2 -mr-2">
+                <!-- History items will be populated here -->
+                <div class="text-center text-gray-500 py-10" id="history-loading-spinner">
+                    <i class="fas fa-spinner fa-spin text-3xl"></i>
+                    <p class="mt-2" data-translate-key="history_loading">Loading history...</p>
+                </div>
+            </div>
+            <button id="close-history-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl" aria-label="Close">&times;</button>
+        </div>
+    </div>
+
+
+    <script src="script.js" defer></script>
+
+</body>
+</html>
